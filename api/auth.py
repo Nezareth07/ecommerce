@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from core.security import get_current_user
 from db.db import get_db
 from schemas.usuario_schema import UserCreate, UserOut, UserLogin, Token
 from services.auth_service import crear_usuario, get_user_by_email, create_access_token
@@ -26,4 +27,10 @@ def login(user:UserLogin, db: Session = Depends(get_db)):
     return{
         "access_token": token,
         "token_type": "bearer"
+    }
+
+@router.get("/productos")
+def get_productos(current_user: str = Depends(get_current_user)):
+    return {
+        "message": f"hola {current_user}, tienes acceso"
     }
