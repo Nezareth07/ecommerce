@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from models.usuario import RolEnum
 from models.producto import Producto
+from sqlalchemy.orm import Session
 
 def crear_producto(db, producto_data, current_user):
 
@@ -29,3 +30,7 @@ def crear_producto(db, producto_data, current_user):
     db.refresh(nuevo)
 
     return nuevo
+
+
+def obtener_productos(db: Session):
+    return db.query(Producto).all()

@@ -4,6 +4,8 @@ from db.db import get_db
 from core.security import get_current_user
 from schemas.product_schema import ProductoCreate, ProductoOut
 from services.producto_service import crear_producto
+from typing import List
+from services.producto_service import obtener_productos
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -14,4 +16,8 @@ def crear_producto_endpoint(
     current_user = Depends(get_current_user)
 ):
     return crear_producto(db, producto, current_user)
+
+@router.get("/", response_model=List[ProductoOut])
+def listar_productos(db: Session = Depends(get_db)):
+    return obtener_productos(db)
 
