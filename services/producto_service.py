@@ -34,3 +34,12 @@ def crear_producto(db, producto_data, current_user):
 
 def obtener_productos(db: Session):
     return db.query(Producto).all()
+
+
+def obtener_producto_por_id(db: Session, producto_id: int):
+    producto = db.query(Producto).filter(Producto.id == producto_id).first()
+
+    if not producto:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    
+    return producto
