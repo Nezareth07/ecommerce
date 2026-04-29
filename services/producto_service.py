@@ -43,3 +43,21 @@ def obtener_producto_por_id(db: Session, producto_id: int):
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     
     return producto
+
+
+def actualizar_producto(db, producto_id, producto_data, current_user):
+    producto = db.query(Producto).filter(Producto.id == producto_id).first()
+
+    if not producto:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    
+    if current_user.rol != RolEnum.ADMIN and producto.proveedor_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No tienes permiso")
+    
+    for key, value in producto_data.dict(exclude_unset=True).items():
+        setattr(producto, key, value)
+
+    db.commit()
+    db.refresh(producto)
+
+    return producto
