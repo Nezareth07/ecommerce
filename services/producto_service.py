@@ -61,3 +61,17 @@ def actualizar_producto(db, producto_id, producto_data, current_user):
     db.refresh(producto)
 
     return producto
+
+def eliminar_producto(db, producto_id, current_user):
+    producto = db.query(Producto).filter(Producto.id == producto_id).first()
+
+    if not producto:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    
+    if current_user.rol != RolEnum.ADMIN and producto.proveedor_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No tienes permiso")
+    
+    db.delete(producto)
+    db.commit()
+
+    return{"message": "Producto eliminado correctamente"}
