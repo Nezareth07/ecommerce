@@ -39,7 +39,7 @@ pip install -r requirements.txt
 
 Módulos actuales:
 - [x] Setup inicial
-- [ ] Autenticación
-- [ ] Productos
+- [x] Autenticación
+- [x] Productos
 - [ ] Carrito
 - [ ] Órdenes
