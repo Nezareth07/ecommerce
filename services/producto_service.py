@@ -31,11 +31,6 @@ def crear_producto(db, producto_data, current_user):
 
     return nuevo
 
-
-def obtener_productos(db: Session):
-    return db.query(Producto).all()
-
-
 def obtener_producto_por_id(db: Session, producto_id: int):
     producto = db.query(Producto).filter(Producto.id == producto_id).first()
 
@@ -75,3 +70,31 @@ def eliminar_producto(db, producto_id, current_user):
     db.commit()
 
     return{"message": "Producto eliminado correctamente"}
+
+def listar_productos_por_filtro(
+        db: Session,
+        categoria_id: int = None,
+        min_precio: float = None,
+        max_precio: float = None,
+        search: str = None,
+        page: int = 1,
+        limit: int = 10
+):
+    query = db.query(Producto)
+
+    if categoria_id:
+        query = query.filter(Producto.categoria_id == categoria_id)
+
+    if min_precio:
+        query = query.filter(Producto.precio >= min_precio)
+
+    if max_precio:
+        query = query.filter(Producto.precio <= max_precio)
+
+    if search:
+        query = query.filter(Producto.nombre.ilike(f"%{search}%"))
+
+    offset = (page - 1) * limit
+    productos = query.offset(offset).limit(limit).all()
+
+    return productos
