@@ -4,6 +4,7 @@ from models.carrito import Carrito
 from models.carrito_item import CarritoItem
 from models.producto import Producto
 
+
 def obtener_carrito(db: Session, user_id: int):
     carrito = db.query(Carrito).filter(Carrito.usuario_id == user_id).first()
 
@@ -15,12 +16,16 @@ def obtener_carrito(db: Session, user_id: int):
 
     return carrito
 
+
 def agregar_producto(db: Session, user_id: int, producto_id: int, cantidad: int):
     producto = db.query(Producto).filter(Producto.id == producto_id).first()
 
     if not producto:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
-    
+
+    if producto.stock < cantidad:
+        raise HTTPException(status_code=400, detail="Stock insuficiente")
+
     carrito = obtener_carrito(db, user_id)
 
     item = db.query(CarritoItem).filter(
@@ -30,16 +35,20 @@ def agregar_producto(db: Session, user_id: int, producto_id: int, cantidad: int)
 
     if item:
         item.cantidad += cantidad
-    else: item = CarritoItem(
-        carrito_id=carrito.id,
-        producto_id=producto_id,
-        cantidad=cantidad,
-        precio_unitario=producto.precio
-    )
-    db.add(item)
+    else:
+        item = CarritoItem(
+            carrito_id=carrito.id,
+            producto_id=producto_id,
+            cantidad=cantidad,
+            precio_unitario=producto.precio
+        )
+        db.add(item)
 
     db.commit()
     db.refresh(item)
+
+    return item
+
 
 def actualizar_cantidad(db: Session, user_id: int, item_id: int, cantidad: int):
     carrito = obtener_carrito(db, user_id)
@@ -61,6 +70,7 @@ def actualizar_cantidad(db: Session, user_id: int, item_id: int, cantidad: int):
 
     return {"msg": "Cantidad actualizada"}
 
+
 def eliminar_item(db: Session, user_id: int, item_id: int):
     carrito = obtener_carrito(db, user_id)
 
@@ -76,6 +86,7 @@ def eliminar_item(db: Session, user_id: int, item_id: int):
     db.commit()
 
     return {"msg": "Producto eliminado del carrito"}
+
 
 def ver_carrito(db: Session, user_id: int):
     carrito = obtener_carrito(db, user_id)
