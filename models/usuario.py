@@ -25,3 +25,4 @@ class Usuario(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     productos = relationship("Producto", back_populates="proveedor")
+    carrito = relationship("Carrito", back_populates="usuario", uselist=False)
