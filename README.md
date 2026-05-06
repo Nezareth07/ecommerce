@@ -67,6 +67,8 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn main:app --reload
 
+```markdown
+
 📖 Documentación
 
 Accede a la documentación automática:
