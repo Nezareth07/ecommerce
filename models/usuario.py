@@ -26,3 +26,4 @@ class Usuario(Base):
 
     productos = relationship("Producto", back_populates="proveedor")
     carrito = relationship("Carrito", back_populates="usuario", uselist=False)
+    pedidos = relationship("Pedido", back_populates="usuario")
